@@ -45,7 +45,7 @@ public class AuthController {
         authService.sentLoginOtp(req.getEmail());
 
         ApiResponse res = new ApiResponse();
-        res.setMessage("otp sent");
+        res.setMessage("We will Send a OTP to your email-> "+req.getEmail());
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
