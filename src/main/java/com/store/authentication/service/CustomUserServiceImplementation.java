@@ -1,4 +1,4 @@
-package com.store.authentication.service.impl;
+package com.store.authentication.service;
 
 
 import com.store.authentication.enums.USER_ROLE;

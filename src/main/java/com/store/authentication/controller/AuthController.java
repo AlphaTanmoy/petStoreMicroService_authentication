@@ -2,7 +2,6 @@ package com.store.authentication.controller;
 
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.model.VerificationCode;
-import com.store.authentication.repo.UserRepository;
 import com.store.authentication.request.LoginRequest;
 import com.store.authentication.request.SignUpRequest;
 import com.store.authentication.response.ApiResponse;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserRepository userRepository;
     private final AuthService authService;
 
     @PostMapping("/signUp")

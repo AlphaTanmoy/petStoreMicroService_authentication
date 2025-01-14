@@ -1,5 +1,6 @@
 package com.store.authentication.rabbitMq;
 
+import com.store.authentication.config.KeywordsAndConstants;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -8,7 +9,6 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import com.store.authentication.config.KeywordsAndConstants;
 
 @Component
 public class RabbitMqConfiguration {
@@ -33,17 +33,24 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public Queue sendOtpByEmail() {
+    public Queue processEmail(){
         return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_LOGIN_OR_SIGNUP_OTP);
     }
 
     @Bean
-    public Declarables bindings(Queue eventQueue, Queue requestSanitationQueue, Queue topicForexDataQueue, TopicExchange topicExchange) {
+    public Declarables bindings(
+            Queue eventQueue,
+            Queue requestSanitationQueue,
+            Queue topicForexDataQueue,
+            TopicExchange topicExchange,
+            Queue processEmail
+    ) {
         return new Declarables(
                 eventQueue,
                 requestSanitationQueue,
                 topicForexDataQueue,
                 topicExchange,
+                processEmail,
                 BindingBuilder.bind(eventQueue)
                         .to(topicExchange)
                         .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_EVENTS),
@@ -53,7 +60,7 @@ public class RabbitMqConfiguration {
                 BindingBuilder.bind(requestSanitationQueue)
                         .to(topicExchange)
                         .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_REQUEST_SANITATION),
-                BindingBuilder.bind(requestSanitationQueue)
+                BindingBuilder.bind(processEmail)
                         .to(topicExchange)
                         .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_LOGIN_OR_SIGNUP_OTP)
 

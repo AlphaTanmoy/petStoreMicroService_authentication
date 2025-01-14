@@ -2,18 +2,19 @@ package com.store.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.store.authentication.enums.USER_ROLE;
-import com.store.authentication.utils.GenerateUUID;
+import com.store.authentication.model.superEntity.SuperEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "users")
-public class User {
-    @Id
-    private String id = GenerateUUID.generateShortUUID();
+public class User extends SuperEntity {
 
     @Column(nullable = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

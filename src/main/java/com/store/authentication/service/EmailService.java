@@ -1,8 +1,8 @@
 package com.store.authentication.service;
 
 
-import com.store.authentication.request.RabbitMqRequestForOtpDeliver;
 import com.store.authentication.config.KeywordsAndConstants;
+import com.store.authentication.request.RabbitMqRequestForOtpDeliver;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

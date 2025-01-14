@@ -1,7 +1,17 @@
 package com.store.authentication.config;
 
+
 public class KeywordsAndConstants {
 
+    public static final String ALGORITHM = "AES";
+    public static final String UTF_8 = "UTF-8";
+    public static final String MESSAGE_DIGEST_ALGORITHM = "SHA-256";
+    public static final String SECRET_KEY_FOR_PASSWORD_ENCRYPTION = "ALPHA1JGSkZWa2RTTUdoS1UydDBUVlJWTlZCVlJrWlRWVEZTVmxac1pGbFhWbkJvV1cxT2ExcFhXbTVoUjJ4eFlU";
+    public static final Integer GET_PASSWORD_MIN_LENGTH = 8;
+    public static final Boolean IS_PASSWORD_MUST_HAVE_CAPITAL_LETTER= false;
+    public static final Boolean IS_PASSWORD_MUST_HAVE_SMALL_LETTER=false;
+    public static final Boolean IS_PASSWORD_MUST_HAVE_NUMBER=false;
+    public static final Boolean IS_PASSWORD_MUST_HAVE_SPECIAL_CHARACTER=false;
     public static final String RABBIT_MQ_USER_NAME="alphaTanmoy";
     public static final String RABBIT_MQ_PASSWORD="password";
     public static final String RABBIT_MQ_HOST="localhost";
@@ -25,4 +35,5 @@ public class KeywordsAndConstants {
     public static final String SIGNING_PREFIX="signing_";
     public static final String OTP_TEXT_FOR_LOGIN="your login otp is - ";
     public static final String OTP_SUBJECT_FOR_LOGIN="petStore Login/Signup Otp";
+
 }

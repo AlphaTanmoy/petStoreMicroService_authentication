@@ -1,21 +1,19 @@
 package com.store.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.store.authentication.utils.GenerateUUID;
+import com.store.authentication.model.superEntity.SuperEntity;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "user_logs")
-public class UserLogs {
-    @Id
-    private String id = GenerateUUID.generateShortUUID();
+public class UserLogs extends SuperEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -27,13 +25,9 @@ public class UserLogs {
     @Column(nullable = false, unique = true)
     private String deviceId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String jwtToken;
-
-    @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDateTime createdDate;
 
     @Column
     @UpdateTimestamp
@@ -41,5 +35,4 @@ public class UserLogs {
 
     private String deviceType;
     private String operatingSystem;
-
 }
