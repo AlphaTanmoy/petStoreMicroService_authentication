@@ -84,7 +84,7 @@ public class AuthService {
 
         infoLogger.setMessage(message+" ");
         infoLoggerRepository.save(infoLogger);
-        emailService.sendVerificationOtpEmail(email, otp, subject, text);
+        //emailService.sendVerificationOtpEmail(email, otp, subject, text);
     }
 
     @Transactional

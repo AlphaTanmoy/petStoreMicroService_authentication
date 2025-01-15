@@ -3,6 +3,8 @@ package com.store.authentication.config;
 
 public class KeywordsAndConstants {
 
+    public static final String HEADER_AUTH_TOKEN="Alpha";
+    public static final String API_KEY_PREFIX="Alpha-Key-";
     public static final String ALGORITHM = "AES";
     public static final String UTF_8 = "UTF-8";
     public static final String MESSAGE_DIGEST_ALGORITHM = "SHA-256";

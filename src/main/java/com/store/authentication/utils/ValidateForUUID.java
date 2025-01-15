@@ -1,23 +1,28 @@
 package com.store.authentication.utils;
 
+import com.store.authentication.config.KeywordsAndConstants;
 import com.store.authentication.error.BadRequestException;
-
+import org.springframework.stereotype.Component;
 import java.util.UUID;
 
+@Component
 public class ValidateForUUID {
 
-    public static boolean check(String potentialId, String paramName, String customErrorMessage) throws BadRequestException {
+    public static void check(String potentialId, String forEntity) throws BadRequestException {
         try {
             UUID.fromString(potentialId);
         } catch (Exception ex) {
             ex.printStackTrace();
-            String paramPostFix = paramName.isEmpty() ? "" : " ";
-            String errorMessageToShow = customErrorMessage != null ? customErrorMessage :
-                    "Please provide a valid " + paramName + paramPostFix + "id";
             BadRequestException badRequestException = new BadRequestException();
-            badRequestException.setErrorMessage(errorMessageToShow);
+            badRequestException.setErrorMessage("Error Validating Id for "+forEntity);
             throw badRequestException;
         }
-        return true;
+    }
+
+    public static String extractUUIDFromAPIKey(String apiKey) {
+        if (apiKey == null || !apiKey.startsWith(KeywordsAndConstants.API_KEY_PREFIX)) {
+            throw new IllegalArgumentException("Invalid API key");
+        }
+        return apiKey.substring(KeywordsAndConstants.API_KEY_PREFIX.length());
     }
 }

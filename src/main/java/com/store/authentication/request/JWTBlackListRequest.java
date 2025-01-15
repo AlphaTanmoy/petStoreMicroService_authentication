@@ -1,4 +1,4 @@
-package com.store.authentication.response;
+package com.store.authentication.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JWTBlackListRequest {
     private String comment;
-    private String actionTakerId;
     private String actionTakenForId;
 }

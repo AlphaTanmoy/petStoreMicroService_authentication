@@ -32,7 +32,7 @@ public class AuthController {
         res.setJwt(jwt);
         res.setMessage("Register Success");
         res.setRole(USER_ROLE.ROLE_CUSTOMER);
-
+        res.setStatus(true);
         return ResponseEntity.ok(res);
     }
 
@@ -43,14 +43,15 @@ public class AuthController {
         authService.sentLoginOtp(req.getEmail());
 
         ApiResponse res = new ApiResponse();
+        res.setStatus(true);
         res.setMessage("We will Send a OTP to your email-> "+req.getEmail());
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @PostMapping("/signIn")
     public ResponseEntity<AuthResponse> signIn(@RequestBody LoginRequest loginRequest, HttpServletRequest httpRequest) throws Exception {
-
         AuthResponse authResponse = authService.signIn(loginRequest, httpRequest);
+        authResponse.setStatus(true);
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 }

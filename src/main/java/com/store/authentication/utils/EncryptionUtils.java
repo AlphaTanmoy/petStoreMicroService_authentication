@@ -6,7 +6,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
 import java.util.Base64;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EncryptionUtils {
 
     public static String encrypt(String data) throws Exception {

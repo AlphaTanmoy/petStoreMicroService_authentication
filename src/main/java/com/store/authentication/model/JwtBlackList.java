@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 public class JwtBlackList extends SuperEntityWithOutDataStatus {
 
     @Column(nullable = false)
-    private String userID;
+    private String actionTakenOn;
 
     @Column(nullable = false)
     private String actionTakenBy;
@@ -23,5 +23,5 @@ public class JwtBlackList extends SuperEntityWithOutDataStatus {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private DATA_STATUS DATASTATUS = DATA_STATUS.BLACKLISTED;
+    private DATA_STATUS dataStatus = DATA_STATUS.INACTIVE;
 }

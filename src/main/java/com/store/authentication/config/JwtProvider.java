@@ -2,6 +2,7 @@ package com.store.authentication.config;
 
 import com.store.authentication.enums.TIRE_CODE;
 import com.store.authentication.enums.USER_ROLE;
+import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.User;
 import com.store.authentication.repo.UserRepository;
 import com.store.authentication.utils.EncryptionUtils;
@@ -76,7 +77,11 @@ public class JwtProvider {
 	public String getIdFromJwtToken(String jwt) {
 		jwt=jwt.substring(7);
 		Claims claims=Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
-		return String.valueOf(claims.get("id"));
+		String id = String.valueOf(claims.get("id"));
+		BadRequestException badRequestException = new BadRequestException();
+		badRequestException.setErrorMessage("Error fetching Id From Token");
+		if(id==null) throw badRequestException;
+		else return id;
 	}
 
 	public String getRoleFromJwtToken(String jwt) {

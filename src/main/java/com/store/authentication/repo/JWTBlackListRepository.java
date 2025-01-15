@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 public interface JWTBlackListRepository extends JpaRepository<JwtBlackList,String> {
 
     @Query(
-            value = "SELECT COUNT(*) FROM jwt_black_list jwt WHERE jwt.userid = :id"
+            value = "SELECT COUNT(*) FROM jwt_black_list jwt WHERE jwt.action_taken_on = :id"
             , nativeQuery = true
     )
     Long findByUserId(@Param("id") String id);
