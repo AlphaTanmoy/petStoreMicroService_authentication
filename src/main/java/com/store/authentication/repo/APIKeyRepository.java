@@ -22,4 +22,14 @@ public interface APIKeyRepository extends JpaRepository<ApiKey,String> {
             ,nativeQuery = true
     )
     List<ApiKey> deleteApiKeyIfExpired();
+
+    @Query(
+            value = "SELECT * FROM api_key " +
+                    "WHERE created_for_user = :createdForUser"
+            ,nativeQuery = true
+    )
+    List<ApiKey> findByUserId(
+            @Param("createdForUser") String createdForUser
+    );
+
 }

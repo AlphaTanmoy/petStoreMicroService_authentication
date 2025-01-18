@@ -1,20 +1,27 @@
 package com.store.authentication.controller;
 
+import com.store.authentication.config.JwtProvider;
+import com.store.authentication.config.KeywordsAndConstants;
 import com.store.authentication.enums.USER_ROLE;
+import com.store.authentication.error.BadRequestException;
+import com.store.authentication.model.User;
 import com.store.authentication.model.VerificationCode;
 import com.store.authentication.request.LoginRequest;
 import com.store.authentication.request.SignUpRequest;
 import com.store.authentication.response.ApiResponse;
 import com.store.authentication.response.AuthResponse;
+import com.store.authentication.response.GetProfile;
+import com.store.authentication.service.ApiKeyService;
 import com.store.authentication.service.AuthService;
+import com.store.authentication.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping()
@@ -22,6 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtProvider jwtProvider;
+    private final UserService userService;
+    private final ApiKeyService apiKeyService;
 
     @PostMapping("/signUp")
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignUpRequest req, HttpServletRequest httpRequest) throws Exception {
@@ -53,5 +63,34 @@ public class AuthController {
         AuthResponse authResponse = authService.signIn(loginRequest, httpRequest);
         authResponse.setStatus(true);
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/getProfile")
+    public GetProfile getProfile(
+            @Valid @RequestHeader(value = KeywordsAndConstants.HEADER_AUTH_TOKEN, required = false) String token
+    ){
+        BadRequestException badRequestException = new BadRequestException();
+        if(token.isEmpty()) {
+            badRequestException.setErrorMessage("Provide a valid Token");
+        }
+
+        String actionTakerId = jwtProvider.getIdFromJwtToken(token);
+        Optional<User> findUser = userService.findUserById(actionTakerId);
+        GetProfile getProfile = new GetProfile();
+
+        if(findUser.isPresent()){
+            getProfile.setName(findUser.get().getFullName());
+            String apiKey = apiKeyService.findApiKeyByUserId(findUser.get().getId());
+            if(apiKey == null) getProfile.setApiKey("No API Key Present");
+            else getProfile.setApiKey(apiKey);
+            getProfile.setUserRole(findUser.get().getRole());
+            getProfile.setTireCode(findUser.get().getTireCode());
+        }
+        else{
+            badRequestException.setErrorMessage("No User Data Found");
+            throw badRequestException;
+        }
+
+        return getProfile;
     }
 }

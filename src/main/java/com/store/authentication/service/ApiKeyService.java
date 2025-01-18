@@ -77,4 +77,12 @@ public class ApiKeyService {
         return constructOutputString.toString();
     }
 
+    public String findApiKeyByUserId(String id){
+        List<ApiKey> findApiKeyEntity = apiKeyRepository.findByUserId(id);
+        if(findApiKeyEntity.isEmpty()){
+            return null;
+        }
+        else return findApiKeyEntity.get(0).getApiKey();
+    }
+
 }
