@@ -13,4 +13,5 @@ public class ApiKeyResponse {
     private String createdFor;
     private String apiKey;
     private CREATION_STATUS createStatus;
+    private String expiryTime;
 }

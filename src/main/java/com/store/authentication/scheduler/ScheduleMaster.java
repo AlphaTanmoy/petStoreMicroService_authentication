@@ -3,6 +3,7 @@ package com.store.authentication.scheduler;
 import com.store.authentication.model.VerificationCode;
 import com.store.authentication.repo.InfoLoggerRepository;
 import com.store.authentication.repo.VerificationCodeRepository;
+import com.store.authentication.service.ApiKeyService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +15,16 @@ public class ScheduleMaster{
 
     private final VerificationCodeRepository verificationCodeRepository;
     private final InfoLoggerRepository infoLoggerRepository;
+    private final ApiKeyService apiKeyService;
 
-    public ScheduleMaster(VerificationCodeRepository verificationCodeRepository, InfoLoggerRepository infoLoggerRepository) {
+    public ScheduleMaster(
+            VerificationCodeRepository verificationCodeRepository,
+            InfoLoggerRepository infoLoggerRepository,
+            ApiKeyService apiKeyService
+    ) {
         this.verificationCodeRepository = verificationCodeRepository;
         this.infoLoggerRepository = infoLoggerRepository;
+        this.apiKeyService = apiKeyService;
     }
 
     @Scheduled(cron = "0 * * * * ?") // every 1 mint
@@ -33,5 +40,6 @@ public class ScheduleMaster{
     @Scheduled(cron = "0 0 0 * * ?")  // This runs every day at midnight
     public void remove24HoursLog() {
         infoLoggerRepository.deleteAll();
+        apiKeyService.deleteApiKeyIfExpired();
     }
 }
