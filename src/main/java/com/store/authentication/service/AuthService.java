@@ -132,8 +132,8 @@ public class AuthService {
 
         String deviceId = UUID.randomUUID().toString();
 
-        verificationCode.setUser(createdUser);
-        verificationCodeRepository.save(verificationCode);
+        verificationCode.get(0).setUser(createdUser);
+        verificationCodeRepository.save(verificationCode.get(0));
 
         UserLogs userDevice = new UserLogs();
         userDevice.setUser(createdUser);
