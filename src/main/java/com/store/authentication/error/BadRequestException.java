@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BadRequestException extends RuntimeException {
+    private String errorMessage;
+    private Integer errorCode; // Custom error code
+    private String errorType;  // Custom error type
 
-    private String errorMessage = "";
-    private Integer code;
-    private String type;
-
-    public BadRequestException(String s) {
-        this.errorMessage = s;
+    public BadRequestException(String message) {
+        this.errorMessage = message;
     }
+
 }
+
