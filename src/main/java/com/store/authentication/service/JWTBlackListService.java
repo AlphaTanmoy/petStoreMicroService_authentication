@@ -21,6 +21,11 @@ public class JWTBlackListService {
     private final UserService userService;
 
 
+    public boolean findBlackListedUserById(String userId){
+        Long findUser = jwtBlackListRepository.findByUserId(userId);
+        return findUser != 0;
+    }
+
 
     public JWTBlackListResponse jwtBlackListOperator(JWTBlackListRequest jwtBlackListRequest, String actionTakerId, Boolean addToJwtBlackList) throws  BadRequestException{
 

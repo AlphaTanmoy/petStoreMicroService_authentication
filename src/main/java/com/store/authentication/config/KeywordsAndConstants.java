@@ -3,6 +3,14 @@ package com.store.authentication.config;
 
 public class KeywordsAndConstants {
 
+    public static final String ADMIN_MICROSERVICE_BASE_URL_LOC = "http://localhost:8081";
+    public static final String AUTH_MICROSERVICE_BASE_URL_LOC = "http://localhost:8082";
+    public static final String CHAT_MICROSERVICE_BASE_URL_LOC = "http://localhost:8083";
+    public static final String CORE_MICROSERVICE_BASE_URL_LOC = "http://localhost:8084";
+    public static final String PAYMENT_MICROSERVICE_BASE_URL_LOC = "http://localhost:8085";
+    public static final String SELLER_MICROSERVICE_BASE_URL_LOC = "http://localhost:8086";
+    public static final String USER_MICROSERVICE_BASE_URL_LOC = "http://localhost:8087";
+
     public static final String HEADER_AUTH_TOKEN="Alpha";
     public static final String API_KEY_PREFIX="Alpha-Key-";
     public static final String ALGORITHM = "AES";

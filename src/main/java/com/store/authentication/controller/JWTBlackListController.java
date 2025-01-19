@@ -64,4 +64,12 @@ public class JWTBlackListController {
 
     }
 
+    @PostMapping("/findBlackListedUser/{userId}")
+    public boolean isBlackListedUser(
+            @PathVariable String userId
+    ){
+        boolean isBlackListed = jwtBlackListService.findBlackListedUserById(userId);
+        return isBlackListed;
+    }
+
 }

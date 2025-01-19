@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -62,11 +63,11 @@ public class AuthService {
             if(user==null) throw new BadRequestException("User not found with this email!");
         }
 
-        VerificationCode isExist = verificationCodeRepository
+        List<VerificationCode> isExist = verificationCodeRepository
                 .findByEmail(email);
 
-        if (isExist != null) {
-            verificationCodeRepository.delete(isExist);
+        if (!isExist.isEmpty()) {
+            verificationCodeRepository.delete(isExist.get(0));
         }
 
         String otp = OtpUtils.generateOTP();
@@ -100,9 +101,9 @@ public class AuthService {
             );
         }
 
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(req.getEmail());
+        List<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(req.getEmail());
 
-        if (verificationCode == null || !verificationCode.getOtp().equals(req.getOtp())) {
+        if (verificationCode == null || !verificationCode.get(0).getOtp().equals(req.getOtp())) {
             throw new BadRequestException("Wrong Otp");
         }
 
@@ -213,13 +214,13 @@ public class AuthService {
             System.out.println("sign in userDetails - null ");
             throw new BadCredentialsException("Invalid username or password");
         }
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email);
+        List<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(email);
 
-        if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
+        if (verificationCode == null || !verificationCode.get(0).getOtp().equals(otp)) {
             throw new BadRequestException("wrong otp...");
         }
-        if (LocalDateTime.now().isAfter(verificationCode.getExpiryDate())) {
-            verificationCodeRepository.delete(verificationCode);
+        if (LocalDateTime.now().isAfter(verificationCode.get(0).getExpiryDate())) {
+            verificationCodeRepository.delete(verificationCode.get(0));
             throw new BadRequestException("OTP expired...");
         }
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

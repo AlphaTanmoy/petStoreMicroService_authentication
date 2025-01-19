@@ -5,8 +5,8 @@ import com.store.authentication.config.KeywordsAndConstants;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.User;
-import com.store.authentication.model.VerificationCode;
 import com.store.authentication.request.LoginRequest;
+import com.store.authentication.request.RequestEmail;
 import com.store.authentication.request.SignUpRequest;
 import com.store.authentication.response.ApiResponse;
 import com.store.authentication.response.AuthResponse;
@@ -17,10 +17,12 @@ import com.store.authentication.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -34,7 +36,7 @@ public class AuthController {
     private final ApiKeyService apiKeyService;
 
     @PostMapping("/signUp")
-    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignUpRequest req, HttpServletRequest httpRequest) throws Exception {
+    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignUpRequest req, HttpServletRequest httpRequest) throws BadRequestException {
 
         String jwt=authService.createUser(req, httpRequest);
 
@@ -48,15 +50,17 @@ public class AuthController {
 
     @PostMapping("/sent/otp")
     public ResponseEntity<ApiResponse> sentLoginOtp(
-            @RequestBody VerificationCode req) throws Exception {
+            @RequestBody RequestEmail req
+    ) throws Exception {
 
         authService.sentLoginOtp(req.getEmail());
 
         ApiResponse res = new ApiResponse();
         res.setStatus(true);
-        res.setMessage("We will Send a OTP to your email-> "+req.getEmail());
+        res.setMessage("We will send an OTP to your email -> " + req.getEmail());
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
+
 
     @PostMapping("/signIn")
     public ResponseEntity<AuthResponse> signIn(@RequestBody LoginRequest loginRequest, HttpServletRequest httpRequest) throws Exception {
