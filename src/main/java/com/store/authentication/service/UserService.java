@@ -16,15 +16,15 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    public void UserRepository(UserRepository userRepository) {
+    public void UserRepository(UserRepository userRepository) throws BadRequestException{
         this.userRepository = userRepository;
     }
 
-    public Optional<User> findUserById(String id){
+    public Optional<User> findUserById(String id) throws BadRequestException {
         return userRepository.findById(id);
     }
 
-    public User findUserByEmail(String email){
+    public User findUserByEmail(String email) throws BadRequestException{
         User findUser = userRepository.findByEmail(email);
         BadRequestException badRequestException = new BadRequestException();
         badRequestException.setErrorMessage("User with " + email + " does not exist");

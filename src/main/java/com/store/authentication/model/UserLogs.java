@@ -29,10 +29,6 @@ public class UserLogs extends SuperEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String jwtToken;
 
-    @Column
-    @UpdateTimestamp
-    private LocalDateTime lastUpdated;
-
     private String deviceType;
     private String operatingSystem;
 }

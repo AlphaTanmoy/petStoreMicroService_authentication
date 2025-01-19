@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@Table(name = "info_logger")
+@Table(name = "api_key")
 public class ApiKey extends SuperEntity {
 
     private String apiKey;
@@ -20,7 +20,7 @@ public class ApiKey extends SuperEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private DATE_RANGE_TYPE expiryDate;
+    private DATE_RANGE_TYPE expiryDateForApiKey;
 
     private ZonedDateTime timeToExpire;
     private Boolean isExpired = false;

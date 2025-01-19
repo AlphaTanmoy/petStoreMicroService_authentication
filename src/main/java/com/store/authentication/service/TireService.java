@@ -1,5 +1,6 @@
 package com.store.authentication.service;
 
+import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.TireManagement;
 import com.store.authentication.repo.TireRepository;
 import jakarta.transaction.Transactional;
@@ -17,7 +18,7 @@ public class TireService {
         this.tireRepository = tireRepository;
     }
 
-    public boolean hasAccess(String requestingTireCode, String apiPath) {
+    public boolean hasAccess(String requestingTireCode, String apiPath) throws BadRequestException {
         TireManagement requestingTire = tireRepository.findByTireCode(requestingTireCode);
         if (requestingTire == null) {
             throw new IllegalArgumentException("Invalid tier code: " + requestingTireCode);

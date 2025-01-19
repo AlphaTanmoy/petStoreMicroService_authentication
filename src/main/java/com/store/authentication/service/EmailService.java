@@ -2,6 +2,7 @@ package com.store.authentication.service;
 
 
 import com.store.authentication.config.KeywordsAndConstants;
+import com.store.authentication.error.BadRequestException;
 import com.store.authentication.request.RabbitMqRequestForOtpDeliver;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class EmailService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendVerificationOtpEmail(String userEmail, String otp, String subject, String text) {
+    public void sendVerificationOtpEmail(String userEmail, String otp, String subject, String text) throws BadRequestException {
         try {
             RabbitMqRequestForOtpDeliver emailMessage = new RabbitMqRequestForOtpDeliver();
             emailMessage.setEmail(userEmail);
@@ -32,7 +33,7 @@ public class EmailService {
                     emailMessage
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send email through RabbitMQ", e);
+            throw new BadRequestException("Failed to send email through RabbitMQ");
         }
     }
 

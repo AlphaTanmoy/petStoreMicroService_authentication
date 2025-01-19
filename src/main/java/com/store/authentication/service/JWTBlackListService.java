@@ -22,7 +22,7 @@ public class JWTBlackListService {
 
 
 
-    public JWTBlackListResponse jwtBlackListOperator(JWTBlackListRequest jwtBlackListRequest, String actionTakerId, Boolean addToJwtBlackList){
+    public JWTBlackListResponse jwtBlackListOperator(JWTBlackListRequest jwtBlackListRequest, String actionTakerId, Boolean addToJwtBlackList) throws  BadRequestException{
 
         JWTBlackListResponse jwtBlackListResponse = new JWTBlackListResponse();
         BadRequestException badRequestException = new BadRequestException();

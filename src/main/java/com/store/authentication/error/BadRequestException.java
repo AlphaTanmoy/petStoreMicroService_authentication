@@ -15,4 +15,8 @@ public class BadRequestException extends RuntimeException {
     private String errorMessage = "";
     private Integer code;
     private String type;
+
+    public BadRequestException(String s) {
+        this.errorMessage = s;
+    }
 }

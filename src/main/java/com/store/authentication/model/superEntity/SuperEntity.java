@@ -24,5 +24,5 @@ public abstract class SuperEntity {
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @Column(nullable = false)
-    private LocalDateTime expiryDate = LocalDateTime.now();
+    private LocalDateTime lastUpdated = LocalDateTime.now();
 }

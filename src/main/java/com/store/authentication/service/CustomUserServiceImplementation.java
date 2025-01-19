@@ -2,6 +2,7 @@ package com.store.authentication.service;
 
 
 import com.store.authentication.enums.USER_ROLE;
+import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.User;
 import com.store.authentication.repo.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,7 +25,7 @@ public class CustomUserServiceImplementation implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws BadRequestException {
 
         User user = userRepository.findByEmail(username);
         if (user != null) {
@@ -32,10 +33,10 @@ public class CustomUserServiceImplementation implements UserDetailsService {
         }
 
 
-        throw new UsernameNotFoundException("User or Seller not found with email - " + username);
+        throw new BadRequestException("User or Seller not found with email - " + username);
     }
 
-    private UserDetails buildUserDetails(String email, String password, USER_ROLE role) {
+    private UserDetails buildUserDetails(String email, String password, USER_ROLE role) throws BadRequestException {
         if (role == null) role = USER_ROLE.ROLE_CUSTOMER;
 
         List<GrantedAuthority> authorities = new ArrayList<>();
