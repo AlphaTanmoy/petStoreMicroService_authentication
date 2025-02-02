@@ -1,6 +1,7 @@
 package com.store.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.store.authentication.enums.MICROSERVICE;
 import com.store.authentication.enums.TIRE_CODE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.model.superEntity.SuperEntity;
@@ -18,8 +19,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User extends SuperEntity {
+@Table(name = "auth_users")
+public class AuthUsers extends SuperEntity {
 
     @Column(nullable = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -44,4 +45,7 @@ public class User extends SuperEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<UserLogs> devices = new ArrayList<>();
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MICROSERVICE microservice_name;
 }

@@ -1,10 +1,11 @@
 package com.store.authentication.service;
 
 import com.store.authentication.enums.DATA_STATUS;
+import com.store.authentication.enums.MICROSERVICE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.JwtBlackList;
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import com.store.authentication.repo.JWTBlackListRepository;
 import com.store.authentication.request.JWTBlackListRequest;
 import com.store.authentication.response.JWTBlackListResponse;
@@ -32,7 +33,7 @@ public class JWTBlackListService {
         JWTBlackListResponse jwtBlackListResponse = new JWTBlackListResponse();
         BadRequestException badRequestException = new BadRequestException();
 
-        Optional<User> actionTaker = userService.findUserById(actionTakerId);
+        Optional<AuthUsers> actionTaker = userService.findUserById(actionTakerId);
         USER_ROLE adminOrMasterConfirmation = actionTaker.get().getRole();
 
         if(adminOrMasterConfirmation.toString().equals(USER_ROLE.ROLE_ADMIN.toString())
@@ -40,7 +41,7 @@ public class JWTBlackListService {
             badRequestException.setErrorMessage("Only Admin and Master Users can have this access! ");
         }
 
-        Optional<User> foundUser = userService.findUserById(jwtBlackListRequest.getActionTakenForId());
+        Optional<AuthUsers> foundUser = userService.findUserById(jwtBlackListRequest.getActionTakenForId());
         if(foundUser.isEmpty()){
             badRequestException.setErrorMessage("User not found");
             throw badRequestException;
@@ -67,6 +68,7 @@ public class JWTBlackListService {
             jwtBlackList.setComment(jwtBlackListRequest.getComment());
             jwtBlackList.setActionTakenOn(jwtBlackListRequest.getActionTakenForId());
             jwtBlackList.setDataStatus(DATA_STATUS.INACTIVE);
+            jwtBlackList.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
             jwtBlackListRepository.save(jwtBlackList);
             jwtBlackListResponse.setActionTakenOnUser(jwtBlackListRequest.getActionTakenForId());
             jwtBlackListResponse.setComment(jwtBlackListRequest.getComment());

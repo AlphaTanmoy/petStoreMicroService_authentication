@@ -1,6 +1,7 @@
 package com.store.authentication.model;
 
 import com.store.authentication.enums.INFO_LOG_TYPE;
+import com.store.authentication.enums.MICROSERVICE;
 import com.store.authentication.model.superEntity.SuperEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,4 +20,7 @@ public class InfoLogger extends SuperEntity {
     @Enumerated(EnumType.STRING)
     private INFO_LOG_TYPE type;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MICROSERVICE microservice_name;
 }

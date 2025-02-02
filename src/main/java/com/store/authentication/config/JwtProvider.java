@@ -3,7 +3,7 @@ package com.store.authentication.config;
 import com.store.authentication.enums.TIRE_CODE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import com.store.authentication.repo.UserRepository;
 import com.store.authentication.utils.EncryptionUtils;
 import io.jsonwebtoken.Claims;
@@ -55,7 +55,7 @@ public class JwtProvider {
 	}
 
 	private String fetchUserIdByEmail(String email) {
-		Optional<User> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
+		Optional<AuthUsers> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
 		if (userOptional.isPresent()) {
 			return String.valueOf(userOptional.get().getId());
 		}

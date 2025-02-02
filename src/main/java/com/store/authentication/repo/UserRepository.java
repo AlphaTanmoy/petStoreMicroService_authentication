@@ -1,13 +1,13 @@
 package com.store.authentication.repo;
 
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface UserRepository  extends JpaRepository<User,String> {
+public interface UserRepository  extends JpaRepository<AuthUsers,String> {
 
-    User findByEmail(String email);
+    AuthUsers findByEmail(String email);
 
     @Query(
             value = "SELECT COUNT(*) FROM users u WHERE u.email = :email"

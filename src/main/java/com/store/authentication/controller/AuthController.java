@@ -4,7 +4,7 @@ import com.store.authentication.config.JwtProvider;
 import com.store.authentication.config.KeywordsAndConstants;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import com.store.authentication.request.LoginRequest;
 import com.store.authentication.request.RequestEmail;
 import com.store.authentication.request.SignUpRequest;
@@ -17,12 +17,9 @@ import com.store.authentication.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -79,7 +76,7 @@ public class AuthController {
         }
 
         String actionTakerId = jwtProvider.getIdFromJwtToken(token);
-        Optional<User> findUser = userService.findUserById(actionTakerId);
+        Optional<AuthUsers> findUser = userService.findUserById(actionTakerId);
         GetProfile getProfile = new GetProfile();
 
         if(findUser.isPresent()){

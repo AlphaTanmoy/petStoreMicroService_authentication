@@ -3,11 +3,12 @@ package com.store.authentication.service;
 import com.store.authentication.config.JwtProvider;
 import com.store.authentication.config.KeywordsAndConstants;
 import com.store.authentication.enums.INFO_LOG_TYPE;
+import com.store.authentication.enums.MICROSERVICE;
 import com.store.authentication.enums.TIRE_CODE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.InfoLogger;
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import com.store.authentication.model.UserLogs;
 import com.store.authentication.model.VerificationCode;
 import com.store.authentication.repo.*;
@@ -50,7 +51,7 @@ public class AuthService {
 
         long userCount = userRepository.countUserByEmail(email);
         if(userCount>0){
-            User findConfirmedUser = userRepository.findByEmail(email);
+            AuthUsers findConfirmedUser = userRepository.findByEmail(email);
             Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
             if(jwtBlackListCount>0) throw new BadRequestException(
                     findConfirmedUser.getFullName()+", You are blackListed. Contact Support For Remove As BlackList"+findConfirmedUser.getRole()+"!"
@@ -59,7 +60,7 @@ public class AuthService {
 
         if (email.startsWith(KeywordsAndConstants.SIGNING_PREFIX)) {
             email = email.substring(KeywordsAndConstants.SIGNING_PREFIX.length());
-            User user=userRepository.findByEmail(email);
+            AuthUsers user=userRepository.findByEmail(email);
             if(user==null) throw new BadRequestException("User not found with this email!");
         }
 
@@ -94,7 +95,7 @@ public class AuthService {
     public String createUser(SignUpRequest req, HttpServletRequest httpRequest) throws BadRequestException {
         long userCount = userRepository.countUserByEmail(req.getEmail());
         if(userCount>0){
-            User findConfirmedUser = userRepository.findByEmail(req.getEmail());
+            AuthUsers findConfirmedUser = userRepository.findByEmail(req.getEmail());
             Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
             if(jwtBlackListCount>0) throw new BadRequestException(
                     findConfirmedUser.getFullName()+", You are blackListed. Contact Support For Remove As BlackList"+findConfirmedUser.getRole()+"!"
@@ -109,19 +110,20 @@ public class AuthService {
 
         long user = userRepository.countUserByEmail(req.getEmail());
         if (user==0) {
-            User createdUser = new User();
+            AuthUsers createdUser = new AuthUsers();
             createdUser.setFullName(req.getFullName());
             createdUser.setEmail(req.getEmail());
             createdUser.setRole(USER_ROLE.ROLE_CUSTOMER);
             createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
-            createdUser.setMobile("9800098000");
+            createdUser.setMobile(req.getMobileNumber());
             createdUser.setTireCode(TIRE_CODE.TIRE4);
+            createdUser.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
             userRepository.save(createdUser);
         } else {
             throw new BadRequestException("User already exists");
         }
 
-        User createdUser = userRepository.findByEmail(req.getEmail());
+        AuthUsers createdUser = userRepository.findByEmail(req.getEmail());
 
         String jwtToken = jwtProvider.generateToken(createdUser.getId(), createdUser.getEmail(), createdUser.getRole());
 
@@ -154,7 +156,7 @@ public class AuthService {
 
         long userCount = userRepository.countUserByEmail(req.getEmail());
         if(userCount>0){
-            User findConfirmedUser = userRepository.findByEmail(req.getEmail());
+            AuthUsers findConfirmedUser = userRepository.findByEmail(req.getEmail());
             Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
             if(jwtBlackListCount>0) throw new BadRequestException(
                     findConfirmedUser.getFullName()+", You are blackListed. Contact Support For Remove As BlackList"+findConfirmedUser.getRole()+"!"
@@ -164,7 +166,7 @@ public class AuthService {
         String email = req.getEmail();
         String otp = req.getOtp();
 
-        User foundUser = userRepository.findByEmail(req.getEmail());
+        AuthUsers foundUser = userRepository.findByEmail(req.getEmail());
         String ipAddress = httpRequest.getHeader("X-Forwarded-For");
         if (ipAddress == null || ipAddress.isEmpty()) {
             ipAddress = httpRequest.getRemoteAddr();

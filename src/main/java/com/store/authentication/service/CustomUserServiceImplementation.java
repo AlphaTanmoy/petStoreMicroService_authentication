@@ -3,13 +3,12 @@ package com.store.authentication.service;
 
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import com.store.authentication.repo.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class CustomUserServiceImplementation implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws BadRequestException {
 
-        User user = userRepository.findByEmail(username);
+        AuthUsers user = userRepository.findByEmail(username);
         if (user != null) {
             return buildUserDetails(user.getEmail(), user.getPassword(), user.getRole());
         }

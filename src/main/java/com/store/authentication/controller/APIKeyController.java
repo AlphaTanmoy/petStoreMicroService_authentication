@@ -2,7 +2,6 @@ package com.store.authentication.controller;
 
 import com.store.authentication.config.JwtProvider;
 import com.store.authentication.config.KeywordsAndConstants;
-import com.store.authentication.enums.DATE_RANGE_TYPE;
 import com.store.authentication.error.BadRequestException;
 import com.store.authentication.request.ApiKeyGenerationRequest;
 import com.store.authentication.response.ApiKeyResponse;

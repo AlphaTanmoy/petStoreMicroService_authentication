@@ -1,7 +1,7 @@
 package com.store.authentication.service;
 
 import com.store.authentication.error.BadRequestException;
-import com.store.authentication.model.User;
+import com.store.authentication.model.AuthUsers;
 import com.store.authentication.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +20,19 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> findUserById(String id) throws BadRequestException {
+    public Optional<AuthUsers> findUserById(String id) throws BadRequestException {
         return userRepository.findById(id);
     }
 
-    public User findUserByEmail(String email) throws BadRequestException{
-        User findUser = userRepository.findByEmail(email);
+    public AuthUsers findUserByEmail(String email) throws BadRequestException{
+        AuthUsers findUser = userRepository.findByEmail(email);
         BadRequestException badRequestException = new BadRequestException();
         badRequestException.setErrorMessage("User with " + email + " does not exist");
         if(findUser==null) throw badRequestException;
         else return findUser;
     }
 
-    public void saveUser(User user){
+    public void saveUser(AuthUsers user){
         userRepository.save(user);
     }
 }
