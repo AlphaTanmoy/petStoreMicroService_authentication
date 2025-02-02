@@ -32,8 +32,6 @@ public class AuthUsers extends SuperEntity {
     @Column(nullable = false)
     private String fullName;
 
-    private String mobile;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private USER_ROLE role;

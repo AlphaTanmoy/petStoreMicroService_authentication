@@ -115,7 +115,6 @@ public class AuthService {
             createdUser.setEmail(req.getEmail());
             createdUser.setRole(USER_ROLE.ROLE_MASTER);
             createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
-            createdUser.setMobile(req.getMobileNumber());
             createdUser.setTireCode(TIRE_CODE.TIRE0);
             createdUser.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
             userRepository.save(createdUser);

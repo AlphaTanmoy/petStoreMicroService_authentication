@@ -1,44 +1,47 @@
 package com.store.authentication.seeder;
 
+import com.store.authentication.enums.INFO_LOG_TYPE;
 import com.store.authentication.enums.MICROSERVICE;
 import com.store.authentication.enums.TIRE_CODE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.model.AuthUsers;
-import com.store.authentication.model.UserLogs;
+import com.store.authentication.model.InfoLogger;
 import com.store.authentication.model.VerificationCode;
-import com.store.authentication.repo.UserLogsRepository;
+import com.store.authentication.repo.InfoLoggerRepository;
 import com.store.authentication.repo.UserRepository;
 import com.store.authentication.repo.VerificationCodeRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Component
-public class seedDataToAuthUsers {
+public class SeedDataToAuthUsers {
 
     private final UserRepository authUsersRepository;
     private final VerificationCodeRepository verificationCodeRepository;
+    private final InfoLoggerRepository infoLoggerRepository;
 
     @Autowired
-    public seedDataToAuthUsers(UserRepository authUsersRepository, VerificationCodeRepository verificationCodeRepository) {
+    public SeedDataToAuthUsers(
+            UserRepository authUsersRepository,
+            VerificationCodeRepository verificationCodeRepository,
+            InfoLoggerRepository infoLoggerRepository
+    ) {
         this.authUsersRepository = authUsersRepository;
         this.verificationCodeRepository = verificationCodeRepository;
+        this.infoLoggerRepository = infoLoggerRepository;
     }
 
-    @PostConstruct
-    public void seedData() {
+    public void seedAuthMasterData() {
         AuthUsers findUsers = authUsersRepository.findByEmail("master.admin@alphStore.com");
-        if (findUsers.getId().isEmpty()) {
+        if (findUsers == null) {
             AuthUsers user = new AuthUsers();
             user.setEmail("master.admin@alphaStore.com");
             user.setFullName("Master");
             user.setPassword("password");
-            user.setMobile("0000000000");
-            user.setRole(USER_ROLE.ROLE_ADMIN);
+            user.setRole(USER_ROLE.ROLE_MASTER);
             user.setTireCode(TIRE_CODE.TIRE0);
             user.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
 
@@ -56,6 +59,12 @@ public class seedDataToAuthUsers {
             code.setUser(user);
             code.setExpiryDate(LocalDateTime.now().plusDays(30));
             verificationCodeRepository.save(code);
+
+            InfoLogger infoLogger = new InfoLogger();
+            infoLogger.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
+            infoLogger.setType(INFO_LOG_TYPE.SEEDING);
+            infoLogger.setMessage("AlphaStore Master User Seeded");
+            infoLoggerRepository.save(infoLogger);
         }
     }
 }
