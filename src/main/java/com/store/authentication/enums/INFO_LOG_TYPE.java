@@ -6,5 +6,6 @@ public enum INFO_LOG_TYPE {
     INFO,
     SYSTEM,
     OTP,
-    OTHERS
+    OTHERS,
+    SEEDING
 }
