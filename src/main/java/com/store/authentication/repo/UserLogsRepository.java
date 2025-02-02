@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface UserLogsRepository extends JpaRepository<UserLogs,String> {
 
     @Query(
-            value = "SELECT COUNT(*) FROM user_logs ul JOIN users u ON ul.user_id = u.id WHERE u.email = :email"
+            value = "SELECT COUNT(*) FROM user_logs ul JOIN auth_users u ON ul.user_id = u.id WHERE u.email = :email"
             , nativeQuery = true
     )
     int findCountByEmail(@Param("email") String email);
@@ -21,7 +21,7 @@ public interface UserLogsRepository extends JpaRepository<UserLogs,String> {
     @Query(
             value = "DELETE FROM user_logs WHERE id = " +
                     "(SELECT ul.id FROM " +
-                    "user_logs ul JOIN users u ON ul.user_id = u.id " +
+                    "user_logs ul JOIN auth_users u ON ul.auth_user_id = u.id " +
                     "WHERE u.email = :email " +
                     "ORDER BY created_date DESC " +
                     "LIMIT 1 ) "

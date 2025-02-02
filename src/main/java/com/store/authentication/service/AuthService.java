@@ -85,7 +85,7 @@ public class AuthService {
         String text = KeywordsAndConstants.OTP_TEXT_FOR_LOGIN;
         InfoLogger infoLogger = new InfoLogger();
         infoLogger.setType(INFO_LOG_TYPE.OTP);
-
+        infoLogger.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
         infoLogger.setMessage(message+" ");
         infoLoggerRepository.save(infoLogger);
         emailService.sendVerificationOtpEmail(email, otp, subject, text);
@@ -113,10 +113,10 @@ public class AuthService {
             AuthUsers createdUser = new AuthUsers();
             createdUser.setFullName(req.getFullName());
             createdUser.setEmail(req.getEmail());
-            createdUser.setRole(USER_ROLE.ROLE_CUSTOMER);
+            createdUser.setRole(USER_ROLE.ROLE_MASTER);
             createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
             createdUser.setMobile(req.getMobileNumber());
-            createdUser.setTireCode(TIRE_CODE.TIRE4);
+            createdUser.setTireCode(TIRE_CODE.TIRE0);
             createdUser.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
             userRepository.save(createdUser);
         } else {
@@ -137,15 +137,15 @@ public class AuthService {
         verificationCode.get(0).setUser(createdUser);
         verificationCodeRepository.save(verificationCode.get(0));
 
-        UserLogs userDevice = new UserLogs();
-        userDevice.setUser(createdUser);
-        userDevice.setIpAddress(ipAddress);
-        userDevice.setDeviceId(deviceId);
-        userDevice.setJwtToken(jwtToken);
-        userDevice.setDeviceType(httpRequest.getHeader("User-Agent"));
-        userDevice.setOperatingSystem("Unknown");
-
-        userLogsRepository.save(userDevice);
+        UserLogs userLogs = new UserLogs();
+        userLogs.setUser(createdUser);
+        userLogs.setIpAddress(ipAddress);
+        userLogs.setDeviceId(deviceId);
+        userLogs.setJwtToken(jwtToken);
+        userLogs.setDeviceType(httpRequest.getHeader("User-Agent"));
+        userLogs.setOperatingSystem("Unknown");
+        userLogs.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
+        userLogsRepository.save(userLogs);
 
         return jwtToken;
     }
@@ -178,14 +178,15 @@ public class AuthService {
         AuthResponse authResponse = new AuthResponse();
 
         String deviceId = UUID.randomUUID().toString();
-        UserLogs userDevice = new UserLogs();
-        userDevice.setUser(foundUser);
-        userDevice.setIpAddress(ipAddress);
-        userDevice.setDeviceId(deviceId);
-        userDevice.setJwtToken(token);
-        userDevice.setDeviceType(httpRequest.getHeader("User-Agent"));
-        userDevice.setOperatingSystem("Unknown");
-        userLogsRepository.save(userDevice);
+        UserLogs userLogs = new UserLogs();
+        userLogs.setUser(foundUser);
+        userLogs.setIpAddress(ipAddress);
+        userLogs.setDeviceId(deviceId);
+        userLogs.setJwtToken(token);
+        userLogs.setDeviceType(httpRequest.getHeader("User-Agent"));
+        userLogs.setOperatingSystem("Unknown");
+        userLogs.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
+        userLogsRepository.save(userLogs);
 
         System.out.println(email + " ----- " + otp);
 

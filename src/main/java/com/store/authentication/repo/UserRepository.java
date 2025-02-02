@@ -10,7 +10,7 @@ public interface UserRepository  extends JpaRepository<AuthUsers,String> {
     AuthUsers findByEmail(String email);
 
     @Query(
-            value = "SELECT COUNT(*) FROM users u WHERE u.email = :email"
+            value = "SELECT COUNT(*) FROM auth_users u WHERE u.email = :email"
             , nativeQuery = true
     )
     Long countUserByEmail(@Param("email") String email);

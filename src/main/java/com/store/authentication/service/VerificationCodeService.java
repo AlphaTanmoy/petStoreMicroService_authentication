@@ -41,7 +41,6 @@ public class VerificationCodeService {
             badRequestException.setErrorMessage("Can't Save for: " + verificationCodeGrabber.getEmail());
             throw badRequestException;
         }
-
         codes.get(0).setUser(verificationCodeGrabber.getUser());
         verificationCodeRepository.save(codes.get(0));
     }
