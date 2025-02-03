@@ -15,6 +15,8 @@ import com.store.authentication.repo.*;
 import com.store.authentication.request.LoginRequest;
 import com.store.authentication.request.SignUpRequest;
 import com.store.authentication.response.AuthResponse;
+import com.store.authentication.response.GetDeviceDetails;
+import com.store.authentication.utils.DeviceUtils;
 import com.store.authentication.utils.OtpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -27,11 +29,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -46,22 +48,23 @@ public class AuthService {
     private final CustomUserServiceImplementation customUserDetails;
     private final InfoLoggerRepository infoLoggerRepository;
     private final JWTBlackListRepository jwtBlackListRepository;
+    private final DeviceUtils deviceUtils;
 
     public void sentLoginOtp(String email) throws BadRequestException {
 
         long userCount = userRepository.countUserByEmail(email);
-        if(userCount>0){
+        if (userCount > 0) {
             AuthUsers findConfirmedUser = userRepository.findByEmail(email);
             Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
-            if(jwtBlackListCount>0) throw new BadRequestException(
-                    findConfirmedUser.getFullName()+", You are blackListed. Contact Support For Remove As BlackList"+findConfirmedUser.getRole()+"!"
+            if (jwtBlackListCount > 0) throw new BadRequestException(
+                    findConfirmedUser.getFullName() + ", You are blackListed. Contact Support For Remove As BlackList" + findConfirmedUser.getRole() + "!"
             );
         }
 
         if (email.startsWith(KeywordsAndConstants.SIGNING_PREFIX)) {
             email = email.substring(KeywordsAndConstants.SIGNING_PREFIX.length());
-            AuthUsers user=userRepository.findByEmail(email);
-            if(user==null) throw new BadRequestException("User not found with this email!");
+            AuthUsers user = userRepository.findByEmail(email);
+            if (user == null) throw new BadRequestException("User not found with this email!");
         }
 
         List<VerificationCode> isExist = verificationCodeRepository
@@ -73,7 +76,7 @@ public class AuthService {
 
         String otp = OtpUtils.generateOTP();
         String message = "";
-        if(userCount==0) message = "OTP Generated for Sign Up Request";
+        if (userCount == 0) message = "OTP Generated for Sign Up Request";
         else message = "OTP Generated for Login Request";
 
         VerificationCode verificationCode = new VerificationCode();
@@ -86,21 +89,43 @@ public class AuthService {
         InfoLogger infoLogger = new InfoLogger();
         infoLogger.setType(INFO_LOG_TYPE.OTP);
         infoLogger.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
-        infoLogger.setMessage(message+" ");
+        infoLogger.setMessage(message + " ");
         infoLoggerRepository.save(infoLogger);
         emailService.sendVerificationOtpEmail(email, otp, subject, text);
     }
 
     @Transactional
-    public String createUser(SignUpRequest req, HttpServletRequest httpRequest) throws BadRequestException {
-        long userCount = userRepository.countUserByEmail(req.getEmail());
-        if(userCount>0){
-            AuthUsers findConfirmedUser = userRepository.findByEmail(req.getEmail());
-            Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
-            if(jwtBlackListCount>0) throw new BadRequestException(
-                    findConfirmedUser.getFullName()+", You are blackListed. Contact Support For Remove As BlackList"+findConfirmedUser.getRole()+"!"
-            );
+    public String createUser(SignUpRequest req, HttpServletRequest httpRequest, MICROSERVICE microservice) throws BadRequestException {
+
+        USER_ROLE finalUserRole = USER_ROLE.ROLE_MASTER;
+        TIRE_CODE finalTireCode = TIRE_CODE.TIRE0;
+        if (microservice == MICROSERVICE.ADMIN) {
+            finalUserRole = USER_ROLE.ROLE_ADMIN;
+            finalTireCode = TIRE_CODE.TIRE1;
         }
+        if (microservice == MICROSERVICE.SELLER) {
+            finalUserRole = USER_ROLE.ROLE_SELLER;
+            finalTireCode = TIRE_CODE.TIRE2;
+        }
+        if (microservice == MICROSERVICE.CHAT) {
+            finalUserRole = USER_ROLE.ROLE_CUSTOMER_CARE;
+            finalTireCode = TIRE_CODE.TIRE3;
+        }
+        if (microservice == MICROSERVICE.DELIVERY) {
+            finalUserRole = USER_ROLE.ROLE_DELIVERY_BOY;
+            finalTireCode = TIRE_CODE.TIRE3;
+        }
+        if (microservice == MICROSERVICE.USER) {
+            finalUserRole = USER_ROLE.ROLE_CUSTOMER;
+            finalTireCode = TIRE_CODE.TIRE4;
+        }
+
+        AuthUsers findConfirmedUser = userRepository.findByEmail(req.getEmail());
+        if (!findConfirmedUser.getId().isEmpty()) return null;
+        Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
+        if (jwtBlackListCount > 0) throw new BadRequestException(
+                findConfirmedUser.getFullName() + ", You are blackListed. Contact Support For Remove As BlackList" + findConfirmedUser.getRole() + "!"
+        );
 
         List<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(req.getEmail());
 
@@ -108,21 +133,14 @@ public class AuthService {
             throw new BadRequestException("Wrong Otp");
         }
 
-        long user = userRepository.countUserByEmail(req.getEmail());
-        if (user==0) {
-            AuthUsers createdUser = new AuthUsers();
-            createdUser.setFullName(req.getFullName());
-            createdUser.setEmail(req.getEmail());
-            createdUser.setRole(USER_ROLE.ROLE_MASTER);
-            createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
-            createdUser.setTireCode(TIRE_CODE.TIRE0);
-            createdUser.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
-            userRepository.save(createdUser);
-        } else {
-            throw new BadRequestException("User already exists");
-        }
-
-        AuthUsers createdUser = userRepository.findByEmail(req.getEmail());
+        AuthUsers createdUser = new AuthUsers();
+        createdUser.setFullName(req.getFullName());
+        createdUser.setEmail(req.getEmail());
+        createdUser.setRole(finalUserRole);
+        createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
+        createdUser.setTireCode(finalTireCode);
+        createdUser.setMicroservice_name(microservice);
+        userRepository.save(createdUser);
 
         String jwtToken = jwtProvider.generateToken(createdUser.getId(), createdUser.getEmail(), createdUser.getRole());
 
@@ -131,34 +149,32 @@ public class AuthService {
             ipAddress = httpRequest.getRemoteAddr();
         }
 
-        String deviceId = UUID.randomUUID().toString();
-
         verificationCode.get(0).setUser(createdUser);
         verificationCodeRepository.save(verificationCode.get(0));
+
+        GetDeviceDetails deviceDetails = deviceUtils.findDeviceDetails(httpRequest.getHeader("User-Agent"));
 
         UserLogs userLogs = new UserLogs();
         userLogs.setUser(createdUser);
         userLogs.setIpAddress(ipAddress);
-        userLogs.setDeviceId(deviceId);
         userLogs.setJwtToken(jwtToken);
-        userLogs.setDeviceType(httpRequest.getHeader("User-Agent"));
-        userLogs.setOperatingSystem("Unknown");
-        userLogs.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
+        userLogs.setDeviceType(deviceDetails.getDeviceType());
+        userLogs.setOperatingSystem(deviceDetails.getOperatingSystem());
+        userLogs.setMicroservice_name(microservice);
         userLogsRepository.save(userLogs);
 
         return jwtToken;
     }
 
 
-
     public AuthResponse signIn(LoginRequest req, HttpServletRequest httpRequest) throws BadRequestException {
 
         long userCount = userRepository.countUserByEmail(req.getEmail());
-        if(userCount>0){
+        if (userCount > 0) {
             AuthUsers findConfirmedUser = userRepository.findByEmail(req.getEmail());
             Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
-            if(jwtBlackListCount>0) throw new BadRequestException(
-                    findConfirmedUser.getFullName()+", You are blackListed. Contact Support For Remove As BlackList"+findConfirmedUser.getRole()+"!"
+            if (jwtBlackListCount > 0) throw new BadRequestException(
+                    findConfirmedUser.getFullName() + ", You are blackListed. Contact Support For Remove As BlackList" + findConfirmedUser.getRole() + "!"
             );
         }
 
@@ -191,10 +207,10 @@ public class AuthService {
 
         int findTotalLoggedInDevices = userLogsRepository.findCountByEmail(foundUser.getEmail());
 
-        if(findTotalLoggedInDevices > KeywordsAndConstants.MAXIMUM_DEVICE_CAN_CONNECT){
+        if (findTotalLoggedInDevices > KeywordsAndConstants.MAXIMUM_DEVICE_CAN_CONNECT) {
             userLogsRepository.deleteAllByEmailAndLastCreated(foundUser.getEmail());
             authResponse.setMessage("Login Success But Logged Out From Most Last Logged In Device");
-        }else{
+        } else {
             authResponse.setMessage("Login Success");
         }
 

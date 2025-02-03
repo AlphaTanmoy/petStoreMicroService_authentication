@@ -14,27 +14,27 @@ import org.springframework.stereotype.Component;
 public class RabbitMqConfiguration {
     @Bean
     public Queue eventQueue() {
-        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_EVENTS);
+        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_EVENTS_AUTHENTICATION);
     }
 
     @Bean
     public Queue requestSanitationQueue() {
-        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_REQUEST_SANITATION);
+        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_REQUEST_SANITATION_AUTHENTICATION);
     }
 
     @Bean
     public Queue topicForexDataQueue() {
-        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_FOREX_DATA);
+        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_FOREX_DATA_AUTHENTICATION);
     }
 
     @Bean
     public TopicExchange topicExchange() {
-        return new TopicExchange(KeywordsAndConstants.RABBIT_MQ_EXCHANGE);
+        return new TopicExchange(KeywordsAndConstants.RABBIT_MQ_EXCHANGE_AUTHENTICATION);
     }
 
     @Bean
     public Queue processEmail(){
-        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_LOGIN_OR_SIGNUP_OTP);
+        return new Queue(KeywordsAndConstants.RABBIT_MQ_QUEUE_FOR_LOGIN_OR_SIGNUP_OTP_AUTHENTICATION);
     }
 
     @Bean
@@ -53,16 +53,16 @@ public class RabbitMqConfiguration {
                 processEmail,
                 BindingBuilder.bind(eventQueue)
                         .to(topicExchange)
-                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_EVENTS),
+                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_EVENTS_AUTHENTICATION),
                 BindingBuilder.bind(topicForexDataQueue)
                         .to(topicExchange)
-                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_FOREX_DATA),
+                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_FOREX_DATA_AUTHENTICATION),
                 BindingBuilder.bind(requestSanitationQueue)
                         .to(topicExchange)
-                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_REQUEST_SANITATION),
+                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_REQUEST_SANITATION_AUTHENTICATION),
                 BindingBuilder.bind(processEmail)
                         .to(topicExchange)
-                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_LOGIN_OR_SIGNUP_OTP)
+                        .with(KeywordsAndConstants.RABBIT_MQ_ROUTE_KEY_FOR_LOGIN_OR_SIGNUP_OTP_AUTHENTICATION)
 
         );
     }

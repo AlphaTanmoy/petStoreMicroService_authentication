@@ -2,6 +2,7 @@ package com.store.authentication.controller;
 
 import com.store.authentication.config.JwtProvider;
 import com.store.authentication.config.KeywordsAndConstants;
+import com.store.authentication.enums.MICROSERVICE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.AuthUsers;
@@ -35,7 +36,11 @@ public class AuthController {
     @PostMapping("/signUp")
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignUpRequest req, HttpServletRequest httpRequest) throws BadRequestException {
 
-        String jwt=authService.createUser(req, httpRequest);
+        String jwt=authService.createUser(req, httpRequest, MICROSERVICE.AUTHENTICATION);
+
+        if(jwt==null){
+            throw new BadRequestException("User Already Exists With this email Id");
+        }
 
         AuthResponse res=new AuthResponse();
         res.setJwt(jwt);
