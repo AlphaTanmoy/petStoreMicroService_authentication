@@ -17,6 +17,7 @@ import com.store.authentication.request.SignUpRequest;
 import com.store.authentication.response.AuthResponse;
 import com.store.authentication.response.GetDeviceDetails;
 import com.store.authentication.utils.DeviceUtils;
+import com.store.authentication.utils.GenerateUUID;
 import com.store.authentication.utils.OtpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -95,42 +97,47 @@ public class AuthService {
     }
 
     @Transactional
-    public String createUser(SignUpRequest req, HttpServletRequest httpRequest, MICROSERVICE microservice) throws BadRequestException {
+    public String createUser(SignUpRequest req, HttpServletRequest httpRequest) throws BadRequestException {
 
         USER_ROLE finalUserRole = USER_ROLE.ROLE_MASTER;
         TIRE_CODE finalTireCode = TIRE_CODE.TIRE0;
-        if (microservice == MICROSERVICE.ADMIN) {
+        if (Objects.equals(req.getMicroServiceName(), MICROSERVICE.ADMIN.name())) {
             finalUserRole = USER_ROLE.ROLE_ADMIN;
             finalTireCode = TIRE_CODE.TIRE1;
         }
-        if (microservice == MICROSERVICE.SELLER) {
+        if (Objects.equals(req.getMicroServiceName(), MICROSERVICE.SELLER.name())) {
             finalUserRole = USER_ROLE.ROLE_SELLER;
             finalTireCode = TIRE_CODE.TIRE2;
         }
-        if (microservice == MICROSERVICE.CHAT) {
+        if (Objects.equals(req.getMicroServiceName(), MICROSERVICE.CHAT.name())) {
             finalUserRole = USER_ROLE.ROLE_CUSTOMER_CARE;
             finalTireCode = TIRE_CODE.TIRE3;
         }
-        if (microservice == MICROSERVICE.DELIVERY) {
+        if (Objects.equals(req.getMicroServiceName(), MICROSERVICE.DELIVERY.name())) {
             finalUserRole = USER_ROLE.ROLE_DELIVERY_BOY;
             finalTireCode = TIRE_CODE.TIRE3;
         }
-        if (microservice == MICROSERVICE.USER) {
+        if (Objects.equals(req.getMicroServiceName(), MICROSERVICE.USER.name())) {
             finalUserRole = USER_ROLE.ROLE_CUSTOMER;
             finalTireCode = TIRE_CODE.TIRE4;
         }
 
         AuthUsers findConfirmedUser = userRepository.findByEmail(req.getEmail());
-        if (!findConfirmedUser.getId().isEmpty()) return null;
-        Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
-        if (jwtBlackListCount > 0) throw new BadRequestException(
-                findConfirmedUser.getFullName() + ", You are blackListed. Contact Support For Remove As BlackList" + findConfirmedUser.getRole() + "!"
-        );
+        if (findConfirmedUser != null && !findConfirmedUser.getId().isEmpty()) return null;
+
+        if(findConfirmedUser != null){
+            Long jwtBlackListCount = jwtBlackListRepository.findByUserId(findConfirmedUser.getId());
+            if (jwtBlackListCount > 0) throw new BadRequestException(
+                    findConfirmedUser.getFullName() + ", You are blackListed. Contact Support For Remove As BlackList" + findConfirmedUser.getRole() + "!"
+            );
+        }
 
         List<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(req.getEmail());
 
-        if (verificationCode == null || !verificationCode.get(0).getOtp().equals(req.getOtp())) {
-            throw new BadRequestException("Wrong Otp");
+        if(Objects.equals(req.getMicroServiceName(), MICROSERVICE.AUTHENTICATION.name())){
+            if (verificationCode == null || !verificationCode.get(0).getOtp().equals(req.getOtp())) {
+                throw new BadRequestException("Wrong Otp");
+            }
         }
 
         AuthUsers createdUser = new AuthUsers();
@@ -139,7 +146,7 @@ public class AuthService {
         createdUser.setRole(finalUserRole);
         createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
         createdUser.setTireCode(finalTireCode);
-        createdUser.setMicroservice_name(microservice);
+        createdUser.setMicroservice_name(MICROSERVICE.valueOf(req.getMicroServiceName()));
         userRepository.save(createdUser);
 
         String jwtToken = jwtProvider.generateToken(createdUser.getId(), createdUser.getEmail(), createdUser.getRole());
@@ -149,8 +156,10 @@ public class AuthService {
             ipAddress = httpRequest.getRemoteAddr();
         }
 
-        verificationCode.get(0).setUser(createdUser);
-        verificationCodeRepository.save(verificationCode.get(0));
+        if(Objects.equals(req.getMicroServiceName(), MICROSERVICE.AUTHENTICATION.name())) {
+            verificationCode.get(0).setUser(createdUser);
+            verificationCodeRepository.save(verificationCode.get(0));
+        }
 
         GetDeviceDetails deviceDetails = deviceUtils.findDeviceDetails(httpRequest.getHeader("User-Agent"));
 
@@ -158,9 +167,10 @@ public class AuthService {
         userLogs.setUser(createdUser);
         userLogs.setIpAddress(ipAddress);
         userLogs.setJwtToken(jwtToken);
+        userLogs.setDeviceId(GenerateUUID.generateShortUUID());
         userLogs.setDeviceType(deviceDetails.getDeviceType());
         userLogs.setOperatingSystem(deviceDetails.getOperatingSystem());
-        userLogs.setMicroservice_name(microservice);
+        userLogs.setMicroservice_name(MICROSERVICE.valueOf(req.getMicroServiceName()));
         userLogsRepository.save(userLogs);
 
         return jwtToken;

@@ -8,4 +8,5 @@ public class SignUpRequest {
     private String fullName;
     private String otp;
     private String mobileNumber;
+    private String microServiceName;
 }

@@ -35,8 +35,15 @@ public class AuthController {
 
     @PostMapping("/signUp")
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignUpRequest req, HttpServletRequest httpRequest) throws BadRequestException {
+        if(req.getMicroServiceName()==null)
+            req.setMicroServiceName(String.valueOf(MICROSERVICE.AUTHENTICATION));
+        try {
+            MICROSERVICE.valueOf(req.getMicroServiceName().toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BadRequestException("Invalid Microservice Name: " + req.getMicroServiceName());
+        }
 
-        String jwt=authService.createUser(req, httpRequest, MICROSERVICE.AUTHENTICATION);
+        String jwt=authService.createUser(req, httpRequest);
 
         if(jwt==null){
             throw new BadRequestException("User Already Exists With this email Id");
