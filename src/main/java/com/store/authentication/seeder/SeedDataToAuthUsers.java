@@ -38,7 +38,7 @@ public class SeedDataToAuthUsers {
         AuthUsers findUsers = authUsersRepository.findByEmail("master.admin@alphStore.com");
         if (findUsers == null) {
             AuthUsers user = new AuthUsers();
-            user.setEmail("master.admin@alphaStore.com");
+            user.setEmail("master.admin@alphStore.com");
             user.setFullName("Master");
             user.setPassword("password");
             user.setRole(USER_ROLE.ROLE_MASTER);
