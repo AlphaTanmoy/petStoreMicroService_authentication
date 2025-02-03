@@ -22,6 +22,7 @@ import com.store.authentication.utils.OtpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,11 +31,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import static com.store.authentication.config.KeywordsAndConstants.*;
 
 
 @Service
@@ -159,6 +164,30 @@ public class AuthService {
         if(Objects.equals(req.getMicroServiceName(), MICROSERVICE.AUTHENTICATION.name())) {
             verificationCode.get(0).setUser(createdUser);
             verificationCodeRepository.save(verificationCode.get(0));
+        }
+        else {
+            String microServiceName = req.getMicroServiceName();
+            String baseUrl = "";
+            if(Objects.equals(microServiceName, MICROSERVICE.ADMIN.name())) baseUrl = ADMIN_MICROSERVICE_BASE_URL_LOC;
+            if(Objects.equals(microServiceName, MICROSERVICE.CHAT.name())) baseUrl = CHAT_MICROSERVICE_BASE_URL_LOC;
+            if(Objects.equals(microServiceName, MICROSERVICE.CORE.name())) baseUrl = CORE_MICROSERVICE_BASE_URL_LOC;
+            if(Objects.equals(microServiceName, MICROSERVICE.PAYMENT.name())) baseUrl = PAYMENT_MICROSERVICE_BASE_URL_LOC;
+            if(Objects.equals(microServiceName, MICROSERVICE.SELLER.name())) baseUrl = SELLER_MICROSERVICE_BASE_URL_LOC;
+            if(Objects.equals(microServiceName, MICROSERVICE.USER.name())) baseUrl = USER_MICROSERVICE_BASE_URL_LOC;
+
+            try{
+                RestTemplate restTemplate = new RestTemplate();
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                String constructURL = baseUrl+"/saveOtp/"+req.getEmail();
+                HttpEntity<String> response = new HttpEntity<>(null, headers);
+                ResponseEntity<String> responseFromMicroservice = restTemplate.postForEntity(constructURL, response, String.class);
+                if (responseFromMicroservice.getStatusCode() != HttpStatus.OK) {
+                    throw new BadRequestException("Failed to create user in "+microServiceName+" Microservice");
+                }
+            } catch (Exception e){
+                throw new BadRequestException("Failed to Successfully Store Otp on "+microServiceName);
+            }
         }
 
         GetDeviceDetails deviceDetails = deviceUtils.findDeviceDetails(httpRequest.getHeader("User-Agent"));
