@@ -11,6 +11,7 @@ import com.store.authentication.repo.InfoLoggerRepository;
 import com.store.authentication.repo.UserRepository;
 import com.store.authentication.repo.VerificationCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -22,32 +23,35 @@ public class SeedDataToAuthUsers {
     private final UserRepository authUsersRepository;
     private final VerificationCodeRepository verificationCodeRepository;
     private final InfoLoggerRepository infoLoggerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public SeedDataToAuthUsers(
             UserRepository authUsersRepository,
             VerificationCodeRepository verificationCodeRepository,
-            InfoLoggerRepository infoLoggerRepository
+            InfoLoggerRepository infoLoggerRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.authUsersRepository = authUsersRepository;
         this.verificationCodeRepository = verificationCodeRepository;
         this.infoLoggerRepository = infoLoggerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void seedAuthMasterData() {
-        AuthUsers findUsers = authUsersRepository.findByEmail("master.admin@alphStore.com");
+        AuthUsers findUsers = authUsersRepository.findByEmail("tanmoy.projects.preview@gmail.com");
         if (findUsers == null) {
             AuthUsers user = new AuthUsers();
-            user.setEmail("master.admin@alphStore.com");
+            user.setEmail("tanmoy.projects.preview@gmail.com");
             user.setFullName("Master");
-            user.setPassword("password");
+            user.setPassword(passwordEncoder.encode("000000"));
             user.setRole(USER_ROLE.ROLE_MASTER);
             user.setTireCode(TIRE_CODE.TIRE0);
             user.setMicroservice_name(MICROSERVICE.AUTHENTICATION);
 
             authUsersRepository.save(user);
 
-            List<VerificationCode> existingCode = verificationCodeRepository.findByEmail("master.admin@alphStore.com");
+            List<VerificationCode> existingCode = verificationCodeRepository.findByEmail("tanmoy.projects.preview@gmail.com");
             if(!existingCode.isEmpty()){
                 verificationCodeRepository.deleteById(existingCode.get(0).getId());
             }
@@ -55,7 +59,7 @@ public class SeedDataToAuthUsers {
             VerificationCode code = new VerificationCode();
 
             code.setOtp("000000");
-            code.setEmail("master.admin@alphStore.com");
+            code.setEmail("tanmoy.projects.preview@gmail.com");
             code.setUser(user);
             code.setExpiryDate(LocalDateTime.now().plusDays(30));
             verificationCodeRepository.save(code);
