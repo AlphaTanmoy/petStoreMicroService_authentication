@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
@@ -61,7 +62,7 @@ public class SeedDataToAuthUsers {
             code.setOtp("000000");
             code.setEmail("tanmoy.projects.preview@gmail.com");
             code.setUser(user);
-            code.setExpiryDate(LocalDateTime.now().plusDays(30));
+            code.setExpiryDate(ZonedDateTime.now().plusDays(30));
             verificationCodeRepository.save(code);
 
             InfoLogger infoLogger = new InfoLogger();

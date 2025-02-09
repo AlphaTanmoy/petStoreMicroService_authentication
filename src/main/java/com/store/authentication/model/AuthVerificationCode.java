@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -29,5 +29,5 @@ public class AuthVerificationCode extends SuperEntityWithoutExpiry {
     private AuthUsers user;
 
     @Column(nullable = false)
-    private LocalDateTime expiryDate =LocalDateTime.now().plusMinutes(OTP_EXPIRED_IN_MINUTES);
+    private ZonedDateTime expiryDate =ZonedDateTime.now().plusMinutes(OTP_EXPIRED_IN_MINUTES);
 }

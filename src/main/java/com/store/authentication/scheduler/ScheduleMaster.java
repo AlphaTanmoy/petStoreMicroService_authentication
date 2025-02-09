@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
@@ -29,7 +30,7 @@ public class ScheduleMaster{
 
     @Scheduled(cron = "0 * * * * ?") // every 1 mint
     public void deleteExpiredOtp() {
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         List<AuthVerificationCode> expiredOtpList = verificationCodeRepository.findByExpiryDateBefore(now);
         for (AuthVerificationCode authVerificationCode : expiredOtpList) {
             verificationCodeRepository.delete(authVerificationCode);

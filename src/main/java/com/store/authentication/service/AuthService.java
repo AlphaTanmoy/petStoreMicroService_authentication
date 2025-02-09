@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -276,7 +277,7 @@ public class AuthService {
         if (authVerificationCode == null || !authVerificationCode.get(0).getOtp().equals(otp)) {
             throw new BadRequestException("wrong otp...");
         }
-        if (LocalDateTime.now().isAfter(authVerificationCode.get(0).getExpiryDate())) {
+        if (ZonedDateTime.now().isAfter(authVerificationCode.get(0).getExpiryDate())) {
             verificationCodeRepository.delete(authVerificationCode.get(0));
             throw new BadRequestException("OTP expired...");
         }
