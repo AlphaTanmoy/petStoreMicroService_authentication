@@ -6,7 +6,7 @@ import com.store.authentication.enums.TIRE_CODE;
 import com.store.authentication.enums.USER_ROLE;
 import com.store.authentication.model.AuthUsers;
 import com.store.authentication.model.InfoLogger;
-import com.store.authentication.model.VerificationCode;
+import com.store.authentication.model.AuthVerificationCode;
 import com.store.authentication.repo.InfoLoggerRepository;
 import com.store.authentication.repo.UserRepository;
 import com.store.authentication.repo.VerificationCodeRepository;
@@ -51,12 +51,12 @@ public class SeedDataToAuthUsers {
 
             authUsersRepository.save(user);
 
-            List<VerificationCode> existingCode = verificationCodeRepository.findByEmail("tanmoy.projects.preview@gmail.com");
+            List<AuthVerificationCode> existingCode = verificationCodeRepository.findByEmail("tanmoy.projects.preview@gmail.com");
             if(!existingCode.isEmpty()){
                 verificationCodeRepository.deleteById(existingCode.get(0).getId());
             }
 
-            VerificationCode code = new VerificationCode();
+            AuthVerificationCode code = new AuthVerificationCode();
 
             code.setOtp("000000");
             code.setEmail("tanmoy.projects.preview@gmail.com");

@@ -7,7 +7,7 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @MappedSuperclass
@@ -17,8 +17,8 @@ public abstract class SuperEntityWithOutDataStatus {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private ZonedDateTime createdDate = ZonedDateTime.now();
 
     @Column(nullable = false)
-    private LocalDateTime expiryDate = LocalDateTime.now();
+    private ZonedDateTime expiryDate = ZonedDateTime.now();
 }

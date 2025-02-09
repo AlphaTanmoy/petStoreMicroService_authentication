@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "verification_code")
-public class VerificationCode extends SuperEntityWithoutExpiry {
+@Table(name = "auth_verification_code")
+public class AuthVerificationCode extends SuperEntityWithoutExpiry {
 
     private String otp;
 

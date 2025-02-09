@@ -14,5 +14,5 @@ public abstract class SuperEntityWithIdAndState {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private DATA_STATUS DATASTATUS = DATA_STATUS.ACTIVE;
+    private DATA_STATUS dataStatus = DATA_STATUS.ACTIVE;
 }

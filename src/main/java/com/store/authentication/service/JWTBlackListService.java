@@ -53,12 +53,12 @@ public class JWTBlackListService {
             throw badRequestException;
         }
 
-        DATA_STATUS currentDataStatus = foundUser.get().getDATASTATUS();
+        DATA_STATUS currentDataStatus = foundUser.get().getDataStatus();
         if(currentDataStatus== DATA_STATUS.INACTIVE){
             badRequestException.setErrorMessage("User is already inactive");
             throw badRequestException;
         }else{
-            foundUser.get().setDATASTATUS(DATA_STATUS.INACTIVE);
+            foundUser.get().setDataStatus(DATA_STATUS.INACTIVE);
             userService.saveUser(foundUser.get());
         }
 

@@ -10,7 +10,7 @@ import com.store.authentication.error.BadRequestException;
 import com.store.authentication.model.InfoLogger;
 import com.store.authentication.model.AuthUsers;
 import com.store.authentication.model.UserLogs;
-import com.store.authentication.model.VerificationCode;
+import com.store.authentication.model.AuthVerificationCode;
 import com.store.authentication.repo.*;
 import com.store.authentication.request.LoginRequest;
 import com.store.authentication.request.SignUpRequest;
@@ -74,7 +74,7 @@ public class AuthService {
             if (user == null) throw new BadRequestException("User not found with this email!");
         }
 
-        List<VerificationCode> isExist = verificationCodeRepository
+        List<AuthVerificationCode> isExist = verificationCodeRepository
                 .findByEmail(email);
 
         if (!isExist.isEmpty()) {
@@ -86,10 +86,10 @@ public class AuthService {
         if (userCount == 0) message = "OTP Generated for Sign Up Request";
         else message = "OTP Generated for Login Request";
 
-        VerificationCode verificationCode = new VerificationCode();
-        verificationCode.setOtp(otp);
-        verificationCode.setEmail(email);
-        verificationCodeRepository.save(verificationCode);
+        AuthVerificationCode authVerificationCode = new AuthVerificationCode();
+        authVerificationCode.setOtp(otp);
+        authVerificationCode.setEmail(email);
+        verificationCodeRepository.save(authVerificationCode);
 
         String subject = KeywordsAndConstants.OTP_SUBJECT_FOR_LOGIN;
         String text = KeywordsAndConstants.OTP_TEXT_FOR_LOGIN;
@@ -137,10 +137,10 @@ public class AuthService {
             );
         }
 
-        List<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(req.getEmail());
+        List<AuthVerificationCode> authVerificationCode = verificationCodeRepository.findByEmail(req.getEmail());
 
         if(Objects.equals(req.getMicroServiceName(), MICROSERVICE.AUTHENTICATION.name())){
-            if (verificationCode == null || !verificationCode.get(0).getOtp().equals(req.getOtp())) {
+            if (authVerificationCode == null || !authVerificationCode.get(0).getOtp().equals(req.getOtp())) {
                 throw new BadRequestException("Wrong Otp");
             }
         }
@@ -162,8 +162,8 @@ public class AuthService {
         }
 
         if(Objects.equals(req.getMicroServiceName(), MICROSERVICE.AUTHENTICATION.name())) {
-            verificationCode.get(0).setUser(createdUser);
-            verificationCodeRepository.save(verificationCode.get(0));
+            authVerificationCode.get(0).setUser(createdUser);
+            verificationCodeRepository.save(authVerificationCode.get(0));
         }
         else {
             String microServiceName = req.getMicroServiceName();
@@ -271,13 +271,13 @@ public class AuthService {
             System.out.println("sign in userDetails - null ");
             throw new BadCredentialsException("Invalid username or password");
         }
-        List<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(email);
+        List<AuthVerificationCode> authVerificationCode = verificationCodeRepository.findByEmail(email);
 
-        if (verificationCode == null || !verificationCode.get(0).getOtp().equals(otp)) {
+        if (authVerificationCode == null || !authVerificationCode.get(0).getOtp().equals(otp)) {
             throw new BadRequestException("wrong otp...");
         }
-        if (LocalDateTime.now().isAfter(verificationCode.get(0).getExpiryDate())) {
-            verificationCodeRepository.delete(verificationCode.get(0));
+        if (LocalDateTime.now().isAfter(authVerificationCode.get(0).getExpiryDate())) {
+            verificationCodeRepository.delete(authVerificationCode.get(0));
             throw new BadRequestException("OTP expired...");
         }
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

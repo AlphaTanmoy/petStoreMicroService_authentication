@@ -1,8 +1,7 @@
 package com.store.authentication.controller;
 
-import com.store.authentication.enums.RESPONSE_TYPE;
 import com.store.authentication.error.BadRequestException;
-import com.store.authentication.model.VerificationCode;
+import com.store.authentication.model.AuthVerificationCode;
 import com.store.authentication.response.VerificationCodeGrabber;
 import com.store.authentication.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,9 @@ public class VerificationCodeController {
     }
 
     @PostMapping("/getCode/{email}")
-    public VerificationCode getVerificationCodeByEmail(@PathVariable String email) throws Exception {
+    public AuthVerificationCode getVerificationCodeByEmail(@PathVariable String email) throws Exception {
         try {
-            VerificationCode res = verificationCodeService.findVerificationCodesByEmail(email);
+            AuthVerificationCode res = verificationCodeService.findVerificationCodesByEmail(email);
             return res;
         } catch (BadRequestException e) {
             throw e;

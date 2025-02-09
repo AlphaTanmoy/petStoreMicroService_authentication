@@ -1,7 +1,7 @@
 package com.store.authentication.service;
 
 import com.store.authentication.error.BadRequestException;
-import com.store.authentication.model.VerificationCode;
+import com.store.authentication.model.AuthVerificationCode;
 import com.store.authentication.repo.VerificationCodeRepository;
 import com.store.authentication.response.VerificationCodeGrabber;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,10 @@ public class VerificationCodeService {
         this.verificationCodeRepository = verificationCodeRepository;
     }
 
-    public VerificationCode findVerificationCodesByEmail(String email) throws BadRequestException {
+    public AuthVerificationCode findVerificationCodesByEmail(String email) throws BadRequestException {
         BadRequestException badRequestException = new BadRequestException();
 
-        List<VerificationCode> codes = verificationCodeRepository.findByEmail(email);
+        List<AuthVerificationCode> codes = verificationCodeRepository.findByEmail(email);
 
         if (codes.isEmpty()) {
             badRequestException.setErrorMessage("No OTPs found for Email Id: " + email);
@@ -36,7 +36,7 @@ public class VerificationCodeService {
     public void saveVerificationCodesByEmail(VerificationCodeGrabber verificationCodeGrabber){
         BadRequestException badRequestException = new BadRequestException();
 
-        List<VerificationCode> codes = verificationCodeRepository.findByEmail(verificationCodeGrabber.getEmail());
+        List<AuthVerificationCode> codes = verificationCodeRepository.findByEmail(verificationCodeGrabber.getEmail());
         if (codes.isEmpty()) {
             badRequestException.setErrorMessage("Can't Save for: " + verificationCodeGrabber.getEmail());
             throw badRequestException;

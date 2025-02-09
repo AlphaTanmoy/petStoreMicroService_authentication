@@ -1,6 +1,6 @@
 package com.store.authentication.scheduler;
 
-import com.store.authentication.model.VerificationCode;
+import com.store.authentication.model.AuthVerificationCode;
 import com.store.authentication.repo.InfoLoggerRepository;
 import com.store.authentication.repo.VerificationCodeRepository;
 import com.store.authentication.service.ApiKeyService;
@@ -30,9 +30,9 @@ public class ScheduleMaster{
     @Scheduled(cron = "0 * * * * ?") // every 1 mint
     public void deleteExpiredOtp() {
         LocalDateTime now = LocalDateTime.now();
-        List<VerificationCode> expiredOtpList = verificationCodeRepository.findByExpiryDateBefore(now);
-        for (VerificationCode verificationCode : expiredOtpList) {
-            verificationCodeRepository.delete(verificationCode);
+        List<AuthVerificationCode> expiredOtpList = verificationCodeRepository.findByExpiryDateBefore(now);
+        for (AuthVerificationCode authVerificationCode : expiredOtpList) {
+            verificationCodeRepository.delete(authVerificationCode);
         }
         System.out.println("Found >> "+expiredOtpList.size()+" expired OTPs");
     }
